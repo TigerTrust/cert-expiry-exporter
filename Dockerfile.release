@@ -1,0 +1,6 @@
+# Used by GoReleaser: it builds the binary and this image just stages it.
+FROM gcr.io/distroless/static:nonroot
+USER nonroot:nonroot
+COPY exporter /exporter
+EXPOSE 8080 8081
+ENTRYPOINT ["/exporter"]
