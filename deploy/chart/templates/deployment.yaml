@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "cert-expiry-exporter.fullname" . }}
+  labels: {{- include "cert-expiry-exporter.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels: {{- include "cert-expiry-exporter.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "cert-expiry-exporter.selectorLabels" . | nindent 8 }}
+      {{- with .Values.podAnnotations }}
+      annotations: {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      serviceAccountName: {{ include "cert-expiry-exporter.fullname" . }}
+      securityContext:
+        runAsNonRoot: true
+      containers:
+        - name: exporter
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - --metrics-addr={{ .Values.exporter.metricsAddr }}
+            - --probe-addr={{ .Values.exporter.probeAddr }}
+            - --interval={{ .Values.exporter.interval }}
+            - --log-format={{ .Values.exporter.logFormat }}
+            {{- if .Values.exporter.namespaces }}
+            - --namespaces={{ .Values.exporter.namespaces }}
+            {{- end }}
+            {{- if .Values.exporter.requireAnnotation }}
+            - --require-annotation
+            {{- end }}
+          ports:
+            - name: metrics
+              containerPort: 8080
+            - name: probes
+              containerPort: 8081
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: probes
+            initialDelaySeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: probes
+            initialDelaySeconds: 5
+          securityContext: {{- toYaml .Values.securityContext | nindent 12 }}
+          resources: {{- toYaml .Values.resources | nindent 12 }}
+      nodeSelector: {{- toYaml .Values.nodeSelector | nindent 8 }}
+      tolerations: {{- toYaml .Values.tolerations | nindent 8 }}
+      affinity: {{- toYaml .Values.affinity | nindent 8 }}

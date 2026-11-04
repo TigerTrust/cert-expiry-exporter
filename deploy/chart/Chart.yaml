@@ -1,0 +1,17 @@
+apiVersion: v2
+name: cert-expiry-exporter
+description: Prometheus exporter for TLS Secret expiry (TigerTrust).
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+sources:
+  - https://github.com/tigertrust/cert-expiry-exporter
+keywords:
+  - tls
+  - cert
+  - prometheus
+  - expiry
+  - tigertrust
+maintainers:
+  - name: TigerTrust
+    url: https://tigertrust.io

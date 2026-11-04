@@ -1,0 +1,60 @@
+{
+  "title": "TigerTrust TLS certificate expiry",
+  "schemaVersion": 38,
+  "version": 1,
+  "refresh": "5m",
+  "timezone": "utc",
+  "time": { "from": "now-7d", "to": "now" },
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Certs expiring within 14 days",
+      "gridPos": { "x": 0, "y": 0, "w": 6, "h": 4 },
+      "targets": [
+        { "expr": "count(tigertrust_cert_not_after_days < 14)", "refId": "A" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": { "mode": "absolute", "steps": [
+            { "color": "green", "value": null },
+            { "color": "red",   "value": 1 }
+          ]}
+        }
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Certs expiring within 30 days",
+      "gridPos": { "x": 6, "y": 0, "w": 6, "h": 4 },
+      "targets": [
+        { "expr": "count(tigertrust_cert_not_after_days < 30)", "refId": "A" }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Expiring soon (ascending)",
+      "gridPos": { "x": 0, "y": 4, "w": 24, "h": 12 },
+      "targets": [
+        {
+          "expr": "sort(tigertrust_cert_not_after_days)",
+          "refId": "A",
+          "format": "table",
+          "instant": true
+        }
+      ],
+      "options": { "cellHeight": "sm", "showHeader": true }
+    },
+    {
+      "type": "timeseries",
+      "title": "Days-left per cert over time",
+      "gridPos": { "x": 0, "y": 16, "w": 24, "h": 10 },
+      "targets": [
+        {
+          "expr": "tigertrust_cert_not_after_days",
+          "refId": "A",
+          "legendFormat": "{{namespace}}/{{secret}} ({{common_name}})"
+        }
+      ]
+    }
+  ]
+}

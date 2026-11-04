@@ -1,0 +1,27 @@
+/bin/
+/dist/
+*.exe
+*.test
+*.out
+*.prof
+coverage.out
+coverage.html
+
+/vendor/
+go.work
+go.work.sum
+
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+.env
+.env.*
+!.env.example
+
+# Helm packaging
+*.tgz
+deploy/chart/charts/
